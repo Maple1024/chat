@@ -1,0 +1,27 @@
+[
+{
+  "directory": "/root/2024_Spring_CPP/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/root/2024_Spring_CPP/chat/include -I/root/2024_Spring_CPP/chat/include/server -I/root/2024_Spring_CPP/chat/include/server/db -g -g -o CMakeFiles/chatServer.dir/chatServer.cpp.o -c /root/2024_Spring_CPP/chat/src/server/chatServer.cpp",
+  "file": "/root/2024_Spring_CPP/chat/src/server/chatServer.cpp"
+},
+{
+  "directory": "/root/2024_Spring_CPP/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/root/2024_Spring_CPP/chat/include -I/root/2024_Spring_CPP/chat/include/server -I/root/2024_Spring_CPP/chat/include/server/db -g -g -o CMakeFiles/chatServer.dir/chatService.cpp.o -c /root/2024_Spring_CPP/chat/src/server/chatService.cpp",
+  "file": "/root/2024_Spring_CPP/chat/src/server/chatService.cpp"
+},
+{
+  "directory": "/root/2024_Spring_CPP/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/root/2024_Spring_CPP/chat/include -I/root/2024_Spring_CPP/chat/include/server -I/root/2024_Spring_CPP/chat/include/server/db -g -g -o CMakeFiles/chatServer.dir/main.cpp.o -c /root/2024_Spring_CPP/chat/src/server/main.cpp",
+  "file": "/root/2024_Spring_CPP/chat/src/server/main.cpp"
+},
+{
+  "directory": "/root/2024_Spring_CPP/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/root/2024_Spring_CPP/chat/include -I/root/2024_Spring_CPP/chat/include/server -I/root/2024_Spring_CPP/chat/include/server/db -g -g -o CMakeFiles/chatServer.dir/userModel.cpp.o -c /root/2024_Spring_CPP/chat/src/server/userModel.cpp",
+  "file": "/root/2024_Spring_CPP/chat/src/server/userModel.cpp"
+},
+{
+  "directory": "/root/2024_Spring_CPP/chat/build/src/server",
+  "command": "/usr/bin/g++  -I/root/2024_Spring_CPP/chat/include -I/root/2024_Spring_CPP/chat/include/server -I/root/2024_Spring_CPP/chat/include/server/db -g -g -o CMakeFiles/chatServer.dir/db/db.cpp.o -c /root/2024_Spring_CPP/chat/src/server/db/db.cpp",
+  "file": "/root/2024_Spring_CPP/chat/src/server/db/db.cpp"
+}
+]

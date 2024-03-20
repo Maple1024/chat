@@ -1,6 +1,6 @@
-#include "chatService.hpp"
 #include "public.hpp"
 #include "user.hpp"
+#include "chatService.hpp"
 #include <functional>
 #include <iostream>
 #include <muduo/base/Logging.h>
@@ -44,65 +44,102 @@ MsgHandler ChatService::getHandler(int msgid)
 // 处理登录业务
 void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp time)
 {
-    int id=js["id"].get<int>();
-    string pwd=js["password"];
+    int id = js["id"].get<int>();
+    string pwd = js["password"];
 
-    User user=_userModel.query(id);
-    if(user.getId()==id && user.getPassword()==pwd){
-        if(user.getState()=="online"){
-            //该用户已经登录，不允许重复登录
+    User user = _userModel.query(id);
+    if (user.getId() == id && user.getPassword() == pwd)
+    {
+        if (user.getState() == "online")
+        {
+            // 该用户已经登录，不允许重复登录
             json response;
-            response["msgid"]=LOGIN_MSG_ACK;
-            response["error"]=2;
-            response["errmsg"]="该账号已经登录，请重新输入账号";
+            response["msgid"] = LOGIN_MSG_ACK;
+            response["error"] = 2;
+            response["errmsg"] = "该账号已经登录，请重新输入账号";
             conn->send(response.dump());
         }
-        else{
-        //登陆成功，更新用户状态信息
-        user.setState("online");
-        _userModel.updateState(user);
+        else
+        {
 
+            {
+                lock_guard<mutex> lock(_connMutex);
+                _userConnMap.insert({id, conn});
+            }
+            // 登陆成功，更新用户状态信息
+            user.setState("online");
+            _userModel.updateState(user);
+
+            json response;
+            response["msgid"] = LOGIN_MSG_ACK;
+            response["error"] = 0;
+            response["id"] = user.getId();
+            response["name"] = user.getName();
+            conn->send(response.dump());
+        }
+    }
+    else
+    {
         json response;
-        response["msgid"]=LOGIN_MSG_ACK;
-        response["error"]=0;
-        response["id"]=user.getId();
-        response["name"]=user.getName();
+        response["msgid"] = LOGIN_MSG_ACK;
+        response["error"] = 1;
+        response["errmsg"] = "登录失败";
         conn->send(response.dump());
     }
-    }
-    else{
-        json response;
-        response["msgid"]=LOGIN_MSG_ACK;
-        response["error"]=1;
-        response["errmsg"]="登录失败";
-        conn->send(response.dump());
-    }
-    
 }
 
 // 处理注册业务
 void ChatService::reg(const TcpConnectionPtr &conn, json &js, Timestamp time)
 {
-    string name=js["name"];
-    string password=js["password"];
+    string name = js["name"];
+    string password = js["password"];
     User user;
     user.setName(name);
     user.setPassword(password);
 
-    bool state=_userModel.insert(user);
-    if(state){
-        //注册成功
+    bool state = _userModel.insert(user);
+    if (state)
+    {
+        // 注册成功
         json response;
-        response["msgid"]=REG_MSG_ACK;
-        response["error"]=0;
-        response["id"]=user.getId();
+        response["msgid"] = REG_MSG_ACK;
+        response["error"] = 0;
+        response["id"] = user.getId();
         conn->send(response.dump());
     }
-    else{
-        //注册失败
+    else
+    {
+        // 注册失败
         json response;
-        response["msgid"]=REG_MSG_ACK;
-        response["error"]=1;
+        response["msgid"] = REG_MSG_ACK;
+        response["error"] = 1;
         conn->send(response.dump());
+    }
+}
+
+// 处理用户的异常退出
+void ChatService::clientCloseException(const TcpConnectionPtr &conn)
+{
+    // 从map表中先找到用户的连接信息，再删除信息
+
+    User user;
+    {
+        lock_guard<mutex> lock(_connMutex);
+        for (auto it = _userConnMap.begin(); it != _userConnMap.end(); ++it)
+        {
+            if (it->second == conn)
+            {
+                user.setId(it->first);
+                _userConnMap.erase(it);
+                break;
+            }
+        }
+    }
+
+    // 更新数据库
+    if (user.getId() != -1)
+    {
+        user.setState("offline");
+        _userModel.updateState(user);
     }
 }
